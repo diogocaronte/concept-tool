@@ -63,3 +63,17 @@ export function select(node, onSelect = () => {}) {
         }
     }
 }
+
+export function wheel(node, onWheel) {
+    function wheel(event) {
+        onWheel({ event, node });
+    }
+
+    node.addEventListener("wheel", wheel);
+
+    return {
+        destroy() {
+            node.removeEventListener("wheel", wheel);
+        }
+    }
+}

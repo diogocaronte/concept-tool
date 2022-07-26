@@ -1,11 +1,12 @@
 <script>
     import { normalizeDisplay, normalizeConnection, UTILS_SYMBOLS } from "$src/utils";
-    import { drag, closestComponent } from "$actions/interaction";
+    import { drag, wheel, closestComponent } from "$actions/interaction";
     import Display from "$components/Display.svelte";
     import DynamicList from "$components/DynamicList.svelte";
 
     export let components = [];
     let display = normalizeDisplay({});
+    let element;
 
     function onBegin({ event, data }) {
         const closest = closestComponent(event.target, data.node);
@@ -29,8 +30,10 @@
         closest_begin.data.y = closest_begin.position.y;
 
         if (!event.shiftKey) {
-            closest_begin.data.x += dx;
-            closest_begin.data.y += dy;
+            const element_client_min = Math.min(element.clientWidth, element.clientHeight);
+            const ratio = display.size / element_client_min;
+            closest_begin.data.x += dx * ratio;
+            closest_begin.data.y += dy * ratio;
         }
 
         if (closest_begin.data === display) display = display;
@@ -56,10 +59,33 @@
             });
         }
     }
+
+    function onWheel({ event, node }) {
+        const closest = closestComponent(event.target, node);
+        if (closest !== element) return;
+
+        const abs = Math.sign(event.deltaY);
+        if (abs === 0) return; // i do not know when this is zero, but...
+
+        let amount = abs * display.increase;
+        if (abs === -1) {
+            const diff = display.size + amount;
+            if (diff <= display.min) amount = amount - (diff - display.min);
+        } else {
+            const diff = display.size + amount;
+            if (diff >= display.max) amount = amount - (diff - display.max);
+        }
+
+        const half_amount = amount / 2;
+
+        display.size += amount;
+        display.x += half_amount;
+        display.y += half_amount;
+    }
 </script>
 
-<div use:drag={{onBegin, onDrag, onEnd}} class="w-full h-full">
-    <Display bind:data={display}>
+<div use:wheel={onWheel} use:drag={{onBegin, onDrag, onEnd}} class="w-full h-full">
+    <Display bind:element bind:data={display}>
         <DynamicList bind:components/>
     </Display>
 </div>

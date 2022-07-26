@@ -10,7 +10,7 @@
 </script>
 
 <main>
-    <div class="w-[500px] h-[500px]">
+    <div class="w-screen h-screen">
         <Application bind:components/>
     </div>
 </main>

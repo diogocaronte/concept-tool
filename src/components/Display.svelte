@@ -3,13 +3,13 @@
     import { UTILS_SYMBOLS } from "$src/utils";
 
     export let data = {}
-    let element;
+    export let element;
 
     onMount(() => {
         element[UTILS_SYMBOLS.custom] = data;
     });
 </script>
 
-<svg bind:this={element} data-type={data.type} class="w-full h-full bg-slate-500" viewBox="{-data.x} {-data.y} 500 500">
+<svg bind:this={element} preserveAspectRatio="xMidYMid meet" data-type={data.type} class="w-full h-full bg-slate-500" viewBox="{-data.x} {-data.y} {data.size} {data.size}">
     <slot />
 </svg>

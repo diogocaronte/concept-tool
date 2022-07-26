@@ -32,6 +32,6 @@ export function normalize(data = {}, normalize = {}) {
     return data;
 }
 
-export const normalizeDisplay = (data) => normalize(data, { type: 'display', x: 0, y: 0 });
+export const normalizeDisplay = (data) => normalize(data, { type: 'display', x: 0, y: 0, size: 500, min: 400, max: 1500, increase: 100 });
 export const normalizeConcept = (data) => normalize(data, { type: 'concept', x: 0, y: 0, text: '????' });
 export const normalizeConnection = (data) => normalize(data, { type: 'connection', x: 0, y: 0, text: '????', componentA: null, componentB: null });
