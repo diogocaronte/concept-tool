@@ -55,9 +55,11 @@
         }
 
         const { closest_begin } = data;
+        if (closest_begin.data === display) return;
+
         const closest = closestComponent(event.target, data.node);
 
-        if (closest === null || closest_begin === closest) return;
+        if (closest === null || closest_begin.element === closest) return;
 
         const closest_data = closest[UTILS_SYMBOLS.custom];
         if (closest_data === display) return;
