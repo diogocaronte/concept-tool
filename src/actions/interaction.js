@@ -50,22 +50,9 @@ export function drag(node, { onBegin = () => true, onDrag = () => {}, onEnd = ()
     }
 }
 
-export function select(node, onSelect = () => {}) {
-    function click(event) {
-        onSelect(closestComponent(event.target, node));
-    }
-
-    node.addEventListener("click", click);
-
-    return {
-        destroy() {
-            node.removeEventListener("click", click);
-        }
-    }
-}
-
-export function wheel(node, onWheel) {
+export function wheel(node, onWheel = () => {}) {
     function wheel(event) {
+        event.preventDefault();
         onWheel({ event, node });
     }
 

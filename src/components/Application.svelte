@@ -3,15 +3,19 @@
     import { drag, wheel, closestComponent } from "$actions/interaction";
     import Display from "$components/Display.svelte";
     import DynamicList from "$components/DynamicList.svelte";
+    import Editor from "$components/Editor/Editor.svelte";
 
     export let components = [];
     let display = normalizeDisplay({});
     let element;
+    let selected = null;
 
     function onBegin({ event, data }) {
         const closest = closestComponent(event.target, data.node);
         if (closest === null) return false;
         
+        data.isSelect = true;
+
         data.closest_begin = {
             element: closest,
             data: closest[UTILS_SYMBOLS.custom],
@@ -25,6 +29,8 @@
     }
 
     function onDrag({ event, dx, dy, data }) {
+        if (data.isSelect && Math.abs(dx) + Math.abs(dy) > 10) data.isSelect = false;
+
         const { closest_begin } = data;
         closest_begin.data.x = closest_begin.position.x;
         closest_begin.data.y = closest_begin.position.y;
@@ -42,6 +48,12 @@
     }
 
     function onEnd({ event, data }) {
+        if (data.isSelect) {
+            if (data.closest_begin.data === display) selected = null;
+            else selected = data.closest_begin.element;
+            return;
+        }
+
         const { closest_begin } = data;
         const closest = closestComponent(event.target, data.node);
 
@@ -84,8 +96,13 @@
     }
 </script>
 
-<div use:wheel={onWheel} use:drag={{onBegin, onDrag, onEnd}} class="w-full h-full">
+<div use:wheel={onWheel} use:drag={{onBegin, onDrag, onEnd}} class="w-full h-full relative">
     <Display bind:element bind:data={display}>
         <DynamicList bind:components/>
     </Display>
+    {#if selected}
+        <div class="absolute top-4 right-4 bottom-4 w-1/3 min-w-[288px] rounded-3xl overflow-hidden">
+            <Editor />
+        </div>
+    {/if}
 </div>
